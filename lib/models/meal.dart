@@ -166,4 +166,6 @@ class MealModel {
       dateModified: json['dateModified'],
     );
   }
+
+  strIngredient(int i) {}
 }

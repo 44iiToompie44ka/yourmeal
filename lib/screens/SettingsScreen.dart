@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SettingsScreen(),
-    );
-  }
-}
+import 'package:provider/provider.dart';
+import 'package:yourmeal/providers/theme_provider.dart';
+import 'package:yourmeal/providers/language_provider.dart';
+import 'package:yourmeal/providers/notification_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -16,53 +11,50 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Settings'),
       ),
-      backgroundColor:
-          Color.fromRGBO(38, 38, 38, 1), // Set background color to #424242
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'General Settings',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
+      body: ListView(
+        padding: EdgeInsets.all(16.0),
+        children: [
+          ListTile(
+            title: Text('Theme'),
+            trailing: Switch(
+              value: Provider.of<ThemeProvider>(context).isDarkMode,
+              onChanged: (value) {
+                Provider.of<ThemeProvider>(context, listen: false)
+                    .toggleTheme();
+              },
             ),
-            SizedBox(height: 16.0),
-            ListTile(
-              title: Text(
-                'Dark Mode',
-                style: TextStyle(color: Colors.white),
-              ),
-              trailing: Switch(
-                value:
-                    true, // You can set the actual value based on user preferences
-                onChanged: (bool value) {
-                  // Implement your logic when the switch is toggled
-                },
-                activeColor: Colors.blue, // Customize the active color
-              ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Language'),
+            trailing: DropdownButton<String>(
+              value: Provider.of<LanguageProvider>(context).selectedLanguage,
+              onChanged: (String? newValue) {
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .changeLanguage(newValue!);
+              },
+              items: ['English', 'Spanish', 'French']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
-            ListTile(
-              title: Text(
-                'Notifications',
-                style: TextStyle(color: Colors.white),
-              ),
-              trailing: Switch(
-                value:
-                    false, // You can set the actual value based on user preferences
-                onChanged: (bool value) {
-                  // Implement your logic when the switch is toggled
-                },
-                activeColor: Colors.blue, // Customize the active color
-              ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Notifications'),
+            trailing: Switch(
+              value: Provider.of<NotificationProvider>(context)
+                  .areNotificationsEnabled,
+              onChanged: (value) {
+                Provider.of<NotificationProvider>(context, listen: false)
+                    .toggleNotifications(value);
+              },
             ),
-            // Add more settings as needed
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
